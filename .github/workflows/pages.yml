@@ -7,7 +7,9 @@ on:
     paths:
       - 'dashboard/**'
       - 'data/**'
-      - 'scripts/build_dashboard_data.py'
+      - 'scripts/**'
+      - 'config/**'
+      - 'archive/**'
       - 'tests/**'
       - '.github/workflows/pages.yml'
 
@@ -30,10 +32,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Validate historical data and merge behavior
-        run: python3 -m unittest discover -s tests -v
+      - name: Install image optimizer (no paid API)
+        run: python3 -m pip install pillow==12.3.0
+      - name: Validate historical data and portal features
+        run: |
+          python3 -m unittest discover -s tests -v
+          node --check dashboard/features.js
+          node tests/test_match.cjs
       - name: Build full dashboard data from historical and current records
         run: python3 scripts/build_dashboard_data.py
+      - name: Prepare saved galleries, source links and distances
+        run: python3 scripts/prepare_portal.py
       - name: Verify published payload
         run: |
           python3 - <<'PY'
@@ -42,7 +51,12 @@ jobs:
           p = json.loads(Path('dashboard/data.json').read_text())
           assert len(p['listings']) >= 53, 'Historical records missing'
           assert len({x['key'] for x in p['listings']}) == len(p['listings'])
+          for row in p['listings']:
+              for archive in row.get('saved_previews', []):
+                  for photo in archive['photos']:
+                      assert (Path('dashboard') / photo['url'].removeprefix('./')).is_file()
           print('Publishing', len(p['listings']), 'vehicles and', len(p['events']), 'events')
+          print('Features:', p['meta']['portal_features'])
           PY
       - name: Configure Pages
         uses: actions/configure-pages@v5

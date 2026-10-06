@@ -1,0 +1,18 @@
+const assert=require('node:assert/strict');
+const M=require('../dashboard/match.js');
+const car={status:'active',price_pln:50000,gearbox:'automatic',equipment:{}};
+const unknown=M.fit(car);assert.equal(unknown.score,30);assert.equal(unknown.potential,100);assert.equal(unknown.coverage,30);
+const absent=M.fit({...car,equipment:{rear_camera:false}});assert.equal(absent.score,30);assert.equal(absent.potential,88);assert.equal(absent.coverage,42);
+const present=M.fit({...car,equipment:{rear_camera:true}});assert.equal(present.score,42);assert.equal(present.potential,100);
+const all={...car,equipment:Object.fromEntries(Object.keys(M.defaults.weights).map(k=>[k,true]))};assert.equal(M.fit(all).score,100);
+assert.equal(M.fit({...all,gearbox:'manual'}).score,92);
+assert.equal(M.fit({...all,gearbox:'manual'},{preferAutomatic:false}).score,100);
+assert.equal(M.fit({...car,status:'sold'}).candidate,false);
+assert.equal(M.fit({...car,defects:['lampa']}).candidate,false);
+assert.equal(M.fit({...car,price_pln:65001}).candidate,false);
+assert.equal(M.fit({...car,price_pln:60000}).score,M.fit({...car,price_pln:40000}).score);
+assert.equal(M.band(null),'unknown');assert.equal(M.band(50),'near');assert.equal(M.band(150),'regional');assert.equal(M.band(300),'far');assert.equal(M.band(301),'long');
+assert.equal(M.distance({lat:52,lon:19},{lat:52,lon:19}),0);
+assert.equal(M.route(null),null);assert.ok(M.route({city:'Wrocław'}).includes('origin=W%C5%82oc%C5%82awek'));
+assert.equal(M.fit(car,{weights:{rear_camera:25}}).total,113);
+console.log('Preference tests passed: unknown vs absent, weights, budget, status, gearbox, distance, route.');
