@@ -69,9 +69,13 @@ def discover_links(session, portal, url):
     return links, result["mode"]
 
 def portal_id(portal, url):
-    if portal in ("otomoto", "olx"):
+    if portal == "otomoto":
         m = re.search(r"(ID[0-9A-Za-z]+)", url)
         return m.group(1) if m else url.rstrip("/").split("/")[-1]
+    if portal == "olx":
+        # OLX URLs contain CID5 before the real listing ID. Take the final -ID... token.
+        m = re.search(r"-ID([0-9A-Za-z]+)\.html", url, re.I)
+        return ("ID" + m.group(1)) if m else url.rstrip("/").split("/")[-1]
     slug = url.rstrip("/").split("/")[-1]
     m = re.search(r"([0-9]{4}-[0-9]{4}-[A-Z]{2})$", slug, re.I)
     return m.group(1) if m else slug
@@ -79,6 +83,34 @@ def portal_id(portal, url):
 def changed(prev, listing, html):
     current = snapshot_fingerprint(listing, html)
     return prev.get("snapshot_fingerprint") != current, current
+
+def qualifies(listing, html):
+    text = BeautifulSoup(html, "lxml").get_text(" ", strip=True).lower()
+    title = (listing.title or "").lower()
+    combined = title + " " + text
+
+    if "insignia" not in combined:
+        return False, "not_insignia"
+    if listing.year and listing.year < 2017:
+        return False, "pre_generation_b"
+    if listing.price_pln and listing.price_pln > SETTINGS["max_price_pln"]:
+        return False, "over_price_limit"
+
+    # We only want Sports Tourer / estate body. Explicit Grand Sport/sedan/liftback is out.
+    if any(x in combined for x in ("grand sport", "sedan", "liftback")) and not any(
+        x in combined for x in ("sports tourer", "sport tourer", "kombi")
+    ):
+        return False, "wrong_body"
+    if not any(x in combined for x in ("sports tourer", "sport tourer", "kombi", "combi")):
+        return False, "body_not_confirmed"
+
+    # Petrol only. A diesel marker without any petrol marker is rejected.
+    petrol_markers = ("benzyna", "petrol", "1.5t", "1.6t", "2.0t", "turbo benz")
+    diesel_markers = ("diesel", "cdti")
+    if any(x in combined for x in diesel_markers) and not any(x in combined for x in petrol_markers):
+        return False, "diesel"
+
+    return True, None
 
 def main():
     session = requests.Session()
@@ -116,7 +148,7 @@ def main():
         if discovery_error:
             summary["portals"][portal]["discovery_error"] = discovery_error
 
-        checked = ok = gone = blocked = errors = browser_used = 0
+        checked = ok = gone = blocked = errors = browser_used = filtered = 0
 
         for link in links:
             checked += 1
@@ -137,8 +169,18 @@ def main():
                 if status >= 400:
                     raise RuntimeError(f"HTTP {status} ({fr['mode']})")
 
-                ok += 1
                 listing = parse_generic_detail(portal, pid, link, fr["html"])
+                accepted, reason = qualifies(listing, fr["html"])
+                if not accepted:
+                    filtered += 1
+                    append_event(DATA / "events.jsonl", {
+                        "type": "filtered_out", "portal": portal, "portal_id": pid,
+                        "url": link, "reason": reason, "price_pln": listing.price_pln,
+                        "year": listing.year
+                    })
+                    continue
+
+                ok += 1
                 key = safe_id(portal, pid, listing.vin)
                 now = datetime.now(timezone.utc).isoformat()
                 prev = state.get(key, {})
@@ -188,7 +230,7 @@ def main():
         summary["direct_checks"][portal] = {
             "checked": checked, "ok": ok, "gone": gone,
             "blocked": blocked, "errors": errors,
-            "browser_used": browser_used
+            "browser_used": browser_used, "filtered_out": filtered
         }
 
     save_json(DATA / "listings.json", state)
