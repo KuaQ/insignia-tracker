@@ -1,1 +1,23 @@
-{}
+{
+  "archived": 0,
+  "blocked": [
+    "olx",
+    "autoplac"
+  ],
+  "changed": 0,
+  "new": 0,
+  "portals": {
+    "autoplac": {
+      "error": "HTTP 403",
+      "links": 0
+    },
+    "olx": {
+      "error": "HTTP 403",
+      "links": 0
+    },
+    "otomoto": {
+      "links": 0
+    }
+  },
+  "run_at": "2026-10-06T13:09:26.317689+00:00"
+}
