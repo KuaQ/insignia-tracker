@@ -1,0 +1,25 @@
+{
+  "archived_at": "2026-10-06T13:25:35.513263+00:00",
+  "portal": "olx",
+  "portal_id": "ID5",
+  "url": "https://www.olx.pl/d/oferta/opel-insignia-opel-insignia-kombii-benzyna-gaz-CID5-ID1cifbG.html",
+  "snapshot_fingerprint": "9e3203cccc4e8e288c58c76987e9e8e886bcabbac0561e1f641613635ad522b5",
+  "images_discovered": 19,
+  "images_requested_limit": 12,
+  "images_saved": 12,
+  "image_files": [
+    "media/01.jpg",
+    "media/02.jpg",
+    "media/03.jpg",
+    "media/04.jpg",
+    "media/05.jpg",
+    "media/06.jpg",
+    "media/07.jpg",
+    "media/08.jpg",
+    "media/09.jpg",
+    "media/10.jpg",
+    "media/11.jpg",
+    "media/12.jpg"
+  ],
+  "completeness": "FULL"
+}

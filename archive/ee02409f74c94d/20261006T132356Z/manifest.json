@@ -1,0 +1,25 @@
+{
+  "archived_at": "2026-10-06T13:24:00.330258+00:00",
+  "portal": "olx",
+  "portal_id": "ID5",
+  "url": "https://www.olx.pl/d/oferta/insignia-b-benzyna-turbo-260ps-4x4-automat-wersja-exclusive-gsi-full-led-CID5-ID19eEvj.html",
+  "snapshot_fingerprint": "375574aa713545de4acc8fe366b3d53f18429fdf4ce8709ce6995a75d7356d17",
+  "images_discovered": 19,
+  "images_requested_limit": 12,
+  "images_saved": 12,
+  "image_files": [
+    "media/01.jpg",
+    "media/02.jpg",
+    "media/03.jpg",
+    "media/04.jpg",
+    "media/05.jpg",
+    "media/06.jpg",
+    "media/07.jpg",
+    "media/08.jpg",
+    "media/09.jpg",
+    "media/10.jpg",
+    "media/11.jpg",
+    "media/12.jpg"
+  ],
+  "completeness": "FULL"
+}

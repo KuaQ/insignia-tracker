@@ -1,23 +1,56 @@
 {
-  "archived": 0,
+  "archived": 31,
   "blocked": [
-    "olx",
     "autoplac"
   ],
-  "changed": 0,
-  "new": 0,
-  "portals": {
+  "changed": 2,
+  "direct_checks": {
     "autoplac": {
-      "error": "HTTP 403",
-      "links": 0
+      "blocked": 0,
+      "browser_used": 2,
+      "checked": 2,
+      "errors": 2,
+      "gone": 0,
+      "ok": 0
     },
     "olx": {
-      "error": "HTTP 403",
-      "links": 0
+      "blocked": 0,
+      "browser_used": 31,
+      "checked": 31,
+      "errors": 22,
+      "gone": 0,
+      "ok": 9
     },
     "otomoto": {
-      "links": 0
+      "blocked": 0,
+      "browser_used": 0,
+      "checked": 35,
+      "errors": 0,
+      "gone": 13,
+      "ok": 22
     }
   },
-  "run_at": "2026-10-06T13:09:26.317689+00:00"
+  "new": 29,
+  "portals": {
+    "autoplac": {
+      "discovered_links": 0,
+      "discovery_error": "HTTP 403 (browser)",
+      "discovery_mode": null,
+      "seeded_links": 2,
+      "total_to_check": 2
+    },
+    "olx": {
+      "discovered_links": 28,
+      "discovery_mode": "browser",
+      "seeded_links": 3,
+      "total_to_check": 31
+    },
+    "otomoto": {
+      "discovered_links": 0,
+      "discovery_mode": "requests",
+      "seeded_links": 35,
+      "total_to_check": 35
+    }
+  },
+  "run_at": "2026-10-06T13:20:55.753895+00:00"
 }

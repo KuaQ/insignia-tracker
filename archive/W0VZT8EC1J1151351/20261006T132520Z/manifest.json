@@ -1,0 +1,25 @@
+{
+  "archived_at": "2026-10-06T13:25:24.586119+00:00",
+  "portal": "olx",
+  "portal_id": "ID5",
+  "url": "https://www.olx.pl/d/oferta/opel-insignia-opel-insignia-b-sportstourer-2-0t-4x4-stan-idealny-120-tys-km-fv23-CID5-ID1cndmU.html",
+  "snapshot_fingerprint": "080a672abd5cf74195fa5ec75c276b0535a6bcb9c8678dd46af89955e5402f04",
+  "images_discovered": 19,
+  "images_requested_limit": 12,
+  "images_saved": 12,
+  "image_files": [
+    "media/01.jpg",
+    "media/02.jpg",
+    "media/03.jpg",
+    "media/04.jpg",
+    "media/05.jpg",
+    "media/06.jpg",
+    "media/07.jpg",
+    "media/08.jpg",
+    "media/09.jpg",
+    "media/10.jpg",
+    "media/11.jpg",
+    "media/12.jpg"
+  ],
+  "completeness": "FULL"
+}

@@ -1,0 +1,25 @@
+{
+  "archived_at": "2026-10-06T13:22:19.572863+00:00",
+  "portal": "otomoto",
+  "portal_id": "ID6Ig2tj",
+  "url": "https://www.otomoto.pl/osobowe/oferta/opel-insignia-ID6Ig2tj.html",
+  "snapshot_fingerprint": "78fec21fd17d030957cc098010298bd5016b1709f829d56604f249d9b1aa9ad8",
+  "images_discovered": 48,
+  "images_requested_limit": 12,
+  "images_saved": 12,
+  "image_files": [
+    "media/01.jpg",
+    "media/02.jpg",
+    "media/03.jpg",
+    "media/04.jpg",
+    "media/05.jpg",
+    "media/06.jpg",
+    "media/07.jpg",
+    "media/08.jpg",
+    "media/09.jpg",
+    "media/10.jpg",
+    "media/11.jpg",
+    "media/12.jpg"
+  ],
+  "completeness": "FULL"
+}

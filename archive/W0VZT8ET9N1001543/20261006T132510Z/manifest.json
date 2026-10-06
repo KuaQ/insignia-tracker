@@ -1,0 +1,25 @@
+{
+  "archived_at": "2026-10-06T13:25:15.276592+00:00",
+  "portal": "olx",
+  "portal_id": "ID5",
+  "url": "https://www.olx.pl/d/oferta/opel-insignia-opel-insignia-b-sports-tourer-kombi-2022r-2-0-benzyna-170-km-CID5-ID1chNdE.html",
+  "snapshot_fingerprint": "1362edf6213ced85ddb2d1abbf2355ae7a3a4a988ec7fcab1612d1596641bf76",
+  "images_discovered": 19,
+  "images_requested_limit": 12,
+  "images_saved": 12,
+  "image_files": [
+    "media/01.jpg",
+    "media/02.jpg",
+    "media/03.jpg",
+    "media/04.jpg",
+    "media/05.jpg",
+    "media/06.jpg",
+    "media/07.jpg",
+    "media/08.jpg",
+    "media/09.jpg",
+    "media/10.jpg",
+    "media/11.jpg",
+    "media/12.jpg"
+  ],
+  "completeness": "FULL"
+}

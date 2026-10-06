@@ -1,0 +1,25 @@
+{
+  "archived_at": "2026-10-06T13:23:28.258210+00:00",
+  "portal": "otomoto",
+  "portal_id": "ID6IgtPG",
+  "url": "https://www.otomoto.pl/osobowe/oferta/opel-insignia-ID6IgtPG.html",
+  "snapshot_fingerprint": "0922ad771aad20e62d480373a227779eeaed4345636f355b58bb959365325a06",
+  "images_discovered": 50,
+  "images_requested_limit": 12,
+  "images_saved": 12,
+  "image_files": [
+    "media/01.jpg",
+    "media/02.jpg",
+    "media/03.jpg",
+    "media/04.jpg",
+    "media/05.jpg",
+    "media/06.jpg",
+    "media/07.jpg",
+    "media/08.jpg",
+    "media/09.jpg",
+    "media/10.jpg",
+    "media/11.jpg",
+    "media/12.jpg"
+  ],
+  "completeness": "FULL"
+}

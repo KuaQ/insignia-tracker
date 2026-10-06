@@ -1,0 +1,25 @@
+{
+  "archived_at": "2026-10-06T13:24:14.844167+00:00",
+  "portal": "olx",
+  "portal_id": "ID5",
+  "url": "https://www.olx.pl/d/oferta/opel-insignia-1-5-benzyna-bogate-wyposazenie-sprowadzony-oplacony-pelna-dok-CID5-ID1cDy1x.html",
+  "snapshot_fingerprint": "71fe69643c8674b17ef3aacbf726e3e263a2b0e6c1a60c7de8babedd49b61c1a",
+  "images_discovered": 19,
+  "images_requested_limit": 12,
+  "images_saved": 12,
+  "image_files": [
+    "media/01.jpg",
+    "media/02.jpg",
+    "media/03.jpg",
+    "media/04.jpg",
+    "media/05.jpg",
+    "media/06.jpg",
+    "media/07.jpg",
+    "media/08.jpg",
+    "media/09.jpg",
+    "media/10.jpg",
+    "media/11.jpg",
+    "media/12.jpg"
+  ],
+  "completeness": "FULL"
+}

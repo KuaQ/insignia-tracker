@@ -1,0 +1,25 @@
+{
+  "archived_at": "2026-10-06T13:23:51.493653+00:00",
+  "portal": "olx",
+  "portal_id": "ID5",
+  "url": "https://www.olx.pl/d/oferta/1-8-140km-sprawdz-navi-serwis-CID5-ID1coRDL.html?search_reason=search%7Corganic",
+  "snapshot_fingerprint": "fefdb743e608d29ca2597fa5572856a12ea08ad3e15b8771cb392243ece511e5",
+  "images_discovered": 19,
+  "images_requested_limit": 12,
+  "images_saved": 12,
+  "image_files": [
+    "media/01.jpg",
+    "media/02.jpg",
+    "media/03.jpg",
+    "media/04.jpg",
+    "media/05.jpg",
+    "media/06.jpg",
+    "media/07.jpg",
+    "media/08.jpg",
+    "media/09.jpg",
+    "media/10.jpg",
+    "media/11.jpg",
+    "media/12.jpg"
+  ],
+  "completeness": "FULL"
+}
