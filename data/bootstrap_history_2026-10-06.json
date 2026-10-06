@@ -1,0 +1,125 @@
+{
+  "generated_from_chat_tracker_on": "2026-10-06",
+  "note": "Bootstrap history imported from ChatGPT tracking. These are observed listing states, not independently verified vehicle condition.",
+  "sold": [
+    {
+      "canonical_id": "ID6HYQae",
+      "aliases": [
+        "OLX1065759276"
+      ],
+      "vin": "W0VZT8EB7J1128163",
+      "status": "sold_user_confirmed",
+      "sold_on": "2026-10-05",
+      "earliest_seen": "2026-10-02",
+      "year": 2018,
+      "engine": "1.5T",
+      "power_hp": 165,
+      "gearbox": "automatic",
+      "mileage_km": 124000,
+      "last_price_pln": 60000
+    }
+  ],
+  "gone_unconfirmed": [
+    {
+      "canonical_id": "ID6Ieqzb",
+      "status": "gone_probably_sold_or_withdrawn",
+      "gone_on": "2026-10-06",
+      "year": 2018,
+      "engine": "1.5T",
+      "power_hp": 165,
+      "gearbox": "manual",
+      "mileage_km": 158000,
+      "last_seen_price_pln": 46900
+    }
+  ],
+  "problematic_active": [
+    {
+      "canonical_id": "ID6IeJyi",
+      "year": 2020,
+      "engine": "1.5T",
+      "power_hp": 165,
+      "gearbox": "manual",
+      "mileage_km": 54030,
+      "price_pln": 29900,
+      "issue": "jawnie uszkodzony"
+    },
+    {
+      "canonical_id": "ID6Ifr03",
+      "year": 2017,
+      "engine": "1.5T",
+      "power_hp": 165,
+      "gearbox": "automatic",
+      "mileage_km": 151600,
+      "price_pln": 38400,
+      "issue": "sprzedawca opisuje kopcenie na biało po rozgrzaniu"
+    }
+  ],
+  "latest_market_snapshot": {
+    "date": "2026-10-06",
+    "main_sample_active": 49,
+    "problematic_active": 2,
+    "median_price_pln": 49500,
+    "median_mileage_km": 154000,
+    "years": {
+      "2017": 4,
+      "2018": 27,
+      "2019": 13,
+      "2020": 3,
+      "2021": 2
+    },
+    "gearboxes": {
+      "automatic": 34,
+      "manual": 15
+    }
+  },
+  "known_duplicates": [
+    [
+      "ID6IeGfF",
+      "OLX1096990976"
+    ],
+    [
+      "ID6IbQAE",
+      "OLX1089957551"
+    ],
+    [
+      "OLX1099130583",
+      "AP0180-6921-JV"
+    ],
+    [
+      "AP8397-4560-WL",
+      "AP7527-2355-VW"
+    ],
+    [
+      "ID6IgtPG",
+      "AP1431-7878-KE"
+    ],
+    [
+      "ID6Ig2tj",
+      "AP7595-1787-VC"
+    ],
+    [
+      "ID6IgcWB",
+      "AP9076-4424-FH"
+    ],
+    [
+      "ID6IfZBm",
+      "AP8553-4977-DJ"
+    ],
+    [
+      "ID6IeJ0i",
+      "AP7290-2067-AK"
+    ],
+    [
+      "ID6IgrJN",
+      "AP9201-4334-SK"
+    ],
+    [
+      "AP4503-3017-RS",
+      "ID6IeLus"
+    ],
+    [
+      "ID6If1ls",
+      "AP0531-7022-AE"
+    ]
+  ]
+}
