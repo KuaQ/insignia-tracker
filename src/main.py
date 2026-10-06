@@ -14,6 +14,7 @@ from .util import safe_id
 
 ROOT = Path(__file__).resolve().parents[1]
 SETTINGS = json.loads((ROOT / "config/settings.json").read_text(encoding="utf-8"))
+TRACKED = json.loads((ROOT / "config/tracked_urls.json").read_text(encoding="utf-8"))
 DATA = ROOT / "data"
 ARCHIVE = ROOT / "archive"
 
@@ -39,12 +40,15 @@ def discover_links(session, portal, url):
         u = urljoin(r.url, a["href"])
         if host_piece in u and path_piece in u:
             links.add(u.split("#", 1)[0])
-    if not links:
-        text = r.text.replace("\\/", "/").replace("&amp;", "&")
-        regex = re.compile(r'https?://[^"\' <>]+')
-        for u in regex.findall(text):
-            if host_piece in u and path_piece in u:
-                links.add(u.split("#", 1)[0])
+    text = r.text.replace("\\/", "/").replace("&amp;", "&").replace("\u002F", "/")
+    for u in re.findall(r'https?://[^"\' <>]+', text):
+        if host_piece in u and path_piece in u:
+            links.add(u.split("#", 1)[0])
+    # Some SPA pages contain only relative detail URLs inside JSON.
+    for rel in re.findall(r'["\']([^"\']*' + re.escape(path_piece) + r'[^"\']+)["\']', text):
+        u = urljoin(r.url, rel)
+        if host_piece in u and path_piece in u:
+            links.add(u.split("#", 1)[0])
     return sorted(links)
 
 def portal_id(portal, url):
@@ -61,29 +65,60 @@ def changed(prev, listing, html):
 
 def main():
     session = requests.Session()
-    session.headers.update({"User-Agent": SETTINGS["user_agent"], "Accept-Language": "pl-PL,pl;q=0.9,en;q=0.6"})
+    session.headers.update({
+        "User-Agent": SETTINGS["user_agent"],
+        "Accept-Language": "pl-PL,pl;q=0.9,en;q=0.6",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Cache-Control": "no-cache",
+    })
     state = load_json(DATA / "listings.json", {})
-    summary = {"run_at": datetime.now(timezone.utc).isoformat(), "portals": {}, "new": 0, "changed": 0, "archived": 0, "blocked": []}
+    summary = {
+        "run_at": datetime.now(timezone.utc).isoformat(),
+        "portals": {}, "new": 0, "changed": 0, "archived": 0,
+        "blocked": [], "direct_checks": {}
+    }
 
     for portal, search_url in SEARCH_URLS.items():
+        discovered = []
+        discovery_error = None
         try:
-            links = discover_links(session, portal, search_url)
-            summary["portals"][portal] = {"links": len(links)}
+            discovered = discover_links(session, portal, search_url)
         except Exception as e:
-            summary["portals"][portal] = {"error": str(e), "links": 0}
+            discovery_error = str(e)
             summary["blocked"].append(portal)
-            continue
+
+        seeded = TRACKED.get(portal, [])
+        links = sorted(set(discovered) | set(seeded))
+        summary["portals"][portal] = {
+            "discovered_links": len(discovered),
+            "seeded_links": len(seeded),
+            "total_to_check": len(links),
+        }
+        if discovery_error:
+            summary["portals"][portal]["discovery_error"] = discovery_error
+
+        checked = 0
+        ok = 0
+        gone = 0
+        blocked = 0
+        errors = 0
 
         for link in links:
+            checked += 1
             pid = portal_id(portal, link)
             try:
                 r = get(session, link, SETTINGS["request_timeout_seconds"])
                 if r.status_code in (404, 410):
-                    append_event(DATA / "events.jsonl", {"type": "portal_copy_gone", "portal": portal, "portal_id": pid, "url": link})
+                    gone += 1
+                    append_event(DATA / "events.jsonl", {
+                        "type": "portal_copy_gone", "portal": portal,
+                        "portal_id": pid, "url": link, "http_status": r.status_code
+                    })
                     continue
                 if r.status_code >= 400:
                     raise RuntimeError(f"HTTP {r.status_code}")
 
+                ok += 1
                 listing = parse_generic_detail(portal, pid, link, r.text)
                 key = safe_id(portal, pid, listing.vin)
                 now = datetime.now(timezone.utc).isoformat()
@@ -103,19 +138,37 @@ def main():
                     event_type = None
 
                 if event_type:
-                    dest, manifest = archive_listing(session, listing, r.text, ARCHIVE, SETTINGS["max_images_per_listing"])
+                    dest, manifest = archive_listing(
+                        session, listing, r.text, ARCHIVE,
+                        SETTINGS["max_images_per_listing"]
+                    )
                     append_event(DATA / "events.jsonl", {
-                        "type": event_type, "key": key, "portal": portal, "portal_id": pid,
-                        "url": link, "archive": str(dest.relative_to(ROOT)),
-                        "price_pln": listing.price_pln, "mileage_km": listing.mileage_km,
+                        "type": event_type, "key": key, "portal": portal,
+                        "portal_id": pid, "url": link,
+                        "archive": str(dest.relative_to(ROOT)),
+                        "price_pln": listing.price_pln,
+                        "mileage_km": listing.mileage_km,
                         "images_saved": manifest["images_saved"],
                     })
                     summary["archived"] += 1
                 state[key] = record
             except FetchBlocked as e:
-                append_event(DATA / "events.jsonl", {"type": "blocked", "portal": portal, "portal_id": pid, "reason": str(e), "url": link})
+                blocked += 1
+                append_event(DATA / "events.jsonl", {
+                    "type": "blocked", "portal": portal, "portal_id": pid,
+                    "reason": str(e), "url": link
+                })
             except Exception as e:
-                append_event(DATA / "events.jsonl", {"type": "error", "portal": portal, "portal_id": pid, "reason": str(e), "url": link})
+                errors += 1
+                append_event(DATA / "events.jsonl", {
+                    "type": "error", "portal": portal, "portal_id": pid,
+                    "reason": str(e), "url": link
+                })
+
+        summary["direct_checks"][portal] = {
+            "checked": checked, "ok": ok, "gone": gone,
+            "blocked": blocked, "errors": errors
+        }
 
     save_json(DATA / "listings.json", state)
     save_json(DATA / "last_run.json", summary)
