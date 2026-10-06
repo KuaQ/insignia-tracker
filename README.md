@@ -42,3 +42,33 @@ python -m src.main
 Workflow jest uruchamiany o 06:00 i 07:00 UTC, ale guard `Europe/Warsaw` pozwala wykonać scraper tylko w runie przypadającym na lokalną 08:00. Dzięki temu zmiana CET/CEST nie wymaga ręcznej edycji crona.
 
 Można też uruchomić go ręcznie w zakładce **Actions → Daily Insignia tracker → Run workflow**.
+
+
+## Panel webowy
+
+Panel znajduje się w katalogu `dashboard/`.
+
+Uruchomienie:
+
+```bash
+python scripts/build_dashboard_data.py
+python dashboard/serve.py
+```
+
+Następnie otwórz:
+
+`http://127.0.0.1:8080/dashboard/`
+
+Panel działa bez Node, bez npm i bez zewnętrznego backendu. Czyta wygenerowany plik `dashboard/data.js` i pokazuje:
+- KPI rynku,
+- filtry i sortowanie ofert,
+- wykres cena vs przebieg,
+- rozkład roczników i skrzyń,
+- wyposażenie,
+- historię zmian,
+- zniknięte/sprzedane auta,
+- linki do oryginału i zachowanych kopii, jeśli istnieją.
+
+### Hosting
+
+Repozytorium jest prywatne. Na GitHub Free GitHub Pages wymaga publicznego repozytorium, dlatego panel domyślnie działa lokalnie i nie wymaga żadnych opłat.
