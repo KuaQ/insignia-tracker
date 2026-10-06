@@ -1,17 +1,10 @@
-name: Daily Insignia tracker
+name: Manual Insignia scraper test
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 6 * * *'
-    - cron: '0 7 * * *'
 
 permissions:
   contents: write
-
-concurrency:
-  group: insignia-daily
-  cancel-in-progress: true
 
 jobs:
   track:
@@ -19,45 +12,22 @@ jobs:
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           cache: 'pip'
-
-      - name: Run only at 08:00 Europe/Warsaw
-        id: localtime
-        shell: bash
-        run: |
-          HOUR=$(TZ=Europe/Warsaw date +%H)
-          echo "hour=$HOUR" >> "$GITHUB_OUTPUT"
-          if [ "$HOUR" != "08" ]; then
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Install dependencies
-        if: github.event_name == 'workflow_dispatch' || steps.localtime.outputs.skip != 'true'
         run: pip install -r requirements.txt
-
       - name: Cache Playwright browser
-        if: github.event_name == 'workflow_dispatch' || steps.localtime.outputs.skip != 'true'
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-1.55.0
-
       - name: Install Chromium
-        if: github.event_name == 'workflow_dispatch' || steps.localtime.outputs.skip != 'true'
         run: python -m playwright install chromium
-
-      - name: Run tracker
-        if: github.event_name == 'workflow_dispatch' || steps.localtime.outputs.skip != 'true'
+      - name: Run scraper test
         run: python -m src.main
-
-      - name: Commit data and archive changes
-        if: github.event_name == 'workflow_dispatch' || steps.localtime.outputs.skip != 'true'
+      - name: Commit test output
         shell: bash
         run: |
           if git diff --quiet && [ -z "$(git status --porcelain)" ]; then
@@ -67,5 +37,5 @@ jobs:
           git config user.name "insignia-tracker[bot]"
           git config user.email "insignia-tracker[bot]@users.noreply.github.com"
           git add data archive
-          git commit -m "tracker: daily update $(TZ=Europe/Warsaw date +%F)"
+          git commit -m "test: scraper run $(date -u +%F)"
           git push
