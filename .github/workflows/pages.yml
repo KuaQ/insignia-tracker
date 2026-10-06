@@ -5,8 +5,11 @@ on:
   push:
     branches: [main]
     paths:
-      - "dashboard/**"
-      - ".github/workflows/pages.yml"
+      - 'dashboard/**'
+      - 'data/**'
+      - 'scripts/build_dashboard_data.py'
+      - 'tests/**'
+      - '.github/workflows/pages.yml'
 
 permissions:
   contents: read
@@ -23,20 +26,31 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
+      - name: Validate historical data and merge behavior
+        run: python3 -m unittest discover -s tests -v
+      - name: Build full dashboard data from historical and current records
+        run: python3 scripts/build_dashboard_data.py
+      - name: Verify published payload
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(Path('dashboard/data.json').read_text())
+          assert len(p['listings']) >= 53, 'Historical records missing'
+          assert len({x['key'] for x in p['listings']}) == len(p['listings'])
+          print('Publishing', len(p['listings']), 'vehicles and', len(p['events']), 'events')
+          PY
       - name: Configure Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
       - name: Upload dashboard
         uses: actions/upload-pages-artifact@v3
         with:
           path: dashboard
-
+          retention-days: 1
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

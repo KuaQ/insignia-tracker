@@ -1,74 +1,39 @@
 # Insignia Tracker
 
-Prywatny, bezobsługowy tracker rynku **Opel Insignia B Sports Tourer** w Polsce.
+[Otwórz panel](https://kuaq.github.io/insignia-tracker/)
 
-## Zakres
-- benzyna
-- cena do 65 000 PLN
-- automat lub manual
-- OTOMOTO, OLX, Autoplac
-- historia cen/statusów
-- deduplikacja po VIN (gdy VIN jest jawny)
-- wersjonowane archiwum HTML/JSON i dostępnych zdjęć
-- GitHub Actions raz dziennie
+## Dane przywrócone z rozmowy
 
-## Koszt
-Projekt nie korzysta z płatnych API, proxy ani zewnętrznej bazy. Workflow używa standardowego runnera GitHub Actions i `GITHUB_TOKEN` repozytorium. Przy prywatnym repo obowiązuje miesięczny limit minut Actions wynikający z Twojego planu GitHub; workflow jest celowo krótki i uruchamia właściwy scraper raz dziennie.
+Panel obejmuje **53 śledzone samochody** odtworzone z raportów 30.09–06.10.2026: 51 ostatnio opisywanych jako aktywne, 1 sprzedany według użytkownika i 1 zniknięty bez potwierdzenia sprzedaży. To historyczny stan raportów, **nie nowa weryfikacja ofert**. Zapis obejmuje parametry, znane kopie portalowe, notatki, deklarowane wyposażenie i 65 zdarzeń (w tym pierwsze obserwacje). Nie wszystkie szczegółowe opisy, linki i galerie były wcześniej zachowane.
 
-## Jak działa archiwum
-Każda pierwsza obserwacja i wykryta zmiana tworzy nową wersję w:
+Źródło odzyskanej historii: [`data/recovered_history_2026-10-06.json`](data/recovered_history_2026-10-06.json). Nie nadpisywać tej migawki nowym przebiegiem. Dawne demonstracyjne 6 rekordów usunięto z kodu panelu.
 
-`archive/<vehicle-id>/<timestamp>/`
+## Jak powstaje strona
 
-Wersja zawiera:
-- `source.html` — HTML zwrócony przez portal,
-- `listing.json` — ustrukturyzowane dane,
-- `manifest.json` — kompletność archiwum,
-- `index.html` — offline karta oferty,
-- `media/` — zdjęcia, które rzeczywiście udało się pobrać.
+Workflow `.github/workflows/pages.yml` uruchamia testy i generator przy zmianach `data/**`, `dashboard/**` lub generatora. Generator łączy trwałą migawkę z nowszymi zweryfikowanymi obserwacjami. Publikuje `dashboard/data.js` i `dashboard/data.json` wraz z panelem; tych dwóch wygenerowanych plików nie utrzymujemy ręcznie w Git.
 
-Tracker **nie obchodzi CAPTCHA/403/429**. Jeśli portal blokuje GitHub Actions, zapisuje błąd zamiast udawać poprawny odczyt.
+Nie uruchamia scrapera, płatnych API ani zewnętrznej bazy danych. Pozostawiony scraper to wyłącznie ręczny test z niepełnym pokryciem; jego wyniki nie są automatycznie źródłem aktualnych statystyk.
 
-## Statusy
-Brak oferty na listingu nie oznacza sprzedaży. Samo 404/410 pojedynczej kopii oznacza tylko zniknięcie tej kopii. Status całego auta trzeba potwierdzić na wszystkich znanych portalach; sprzedaż wymaga dodatkowego potwierdzenia.
+Lokalnie:
 
-## Uruchomienie lokalne
-```bash
-python -m pip install -r requirements.txt
-python -m src.main
+```sh
+python3 -m unittest discover -s tests -v
+python3 scripts/build_dashboard_data.py
+python3 dashboard/serve.py
 ```
 
-## GitHub Actions
-Workflow jest uruchamiany o 06:00 i 07:00 UTC, ale guard `Europe/Warsaw` pozwala wykonać scraper tylko w runie przypadającym na lokalną 08:00. Dzięki temu zmiana CET/CEST nie wymaga ręcznej edycji crona.
+## Kontrakt kolejnych aktualizacji
 
-Można też uruchomić go ręcznie w zakładce **Actions → Daily Insignia tracker → Run workflow**.
+`data/listings.json` może zawierać nowsze rekordy jako mapę lub listę. Dla każdego: `key`, `data_source: "chat_tracker_run"` (lub `"verified_run"`), `observed_at` w ISO 8601, status, znane parametry i `copies` z osobnymi ID/URL/cenami/statusami. Puste pliki nie usuwają odzyskanej historii. Starszy odczyt nie nadpisuje nowszego. Nie przywracać sprzedanego auta do aktywnych bez `return_evidence`.
 
+Do `data/events.jsonl` dopisywać zdarzenia z `key`, `at`, `type` i `source: "chat_tracker_run"` albo `"verified_run"`. Nie kasować poprzednich linii. Korekty odczytów oznaczać `data_correction`, nie zmianami ceny. `first_seen` nie może być zerowane. Brak danych o wyposażeniu nie oznacza `false`.
 
-## Panel webowy
+Pełny nowy samochód wymaga również pól `title`, `year`, `mileage_km`, `price_pln`, `gearbox`, `first_seen`, `equipment`, `description`, `problematic`, `defects` i `copies`; nieznane wartości pozostają null lub puste z wyjaśnieniem, a status dostępności musi być zgodny z dowodami.
 
-Panel znajduje się w katalogu `dashboard/`.
+## Archiwa i ograniczenia
 
-Uruchomienie:
+Istniejące katalogi `archive/` pozostają nietknięte. Generator wiąże je z kartami wyłącznie po pasującym ID/URL, nie po podobnym VIN. Link opisany jako „archiwum testowe” nie oznacza kompletnej i zweryfikowanej galerii. Nie używać licznika 404/410 z testowego scrapera jako dowodu sprzedaży samochodu.
 
-```bash
-python scripts/build_dashboard_data.py
-python dashboard/serve.py
-```
+Wykresy i mediany korzystają z tej samej filtrowanej próby: ofert aktywnych według raportów bez opisanych usterek. Nie są to auta sprawdzone technicznie. Zgłoszone uszkodzenia blacharskie oraz lampa/klapa nie znikają z tabeli; są oznaczone i wyłączone z tej próby.
 
-Następnie otwórz:
-
-`http://127.0.0.1:8080/dashboard/`
-
-Panel działa bez Node, bez npm i bez zewnętrznego backendu. Czyta wygenerowany plik `dashboard/data.js` i pokazuje:
-- KPI rynku,
-- filtry i sortowanie ofert,
-- wykres cena vs przebieg,
-- rozkład roczników i skrzyń,
-- wyposażenie,
-- historię zmian,
-- zniknięte/sprzedane auta,
-- linki do oryginału i zachowanych kopii, jeśli istnieją.
-
-### Hosting
-
-Repozytorium jest prywatne. Na GitHub Free GitHub Pages wymaga publicznego repozytorium, dlatego panel domyślnie działa lokalnie i nie wymaga żadnych opłat.
+Testy chronią komplet 53 historycznych rekordów, rozdzielenie korekt i obniżek, kopie portalowe, niepewną skrzynię, brak wyposażenia vs brak danych oraz zachowanie pierwszych dat obserwacji.
