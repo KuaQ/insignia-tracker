@@ -38,11 +38,14 @@ jobs:
         run: |
           python3 -m unittest discover -s tests -v
           node --check dashboard/features.js
+          node --check dashboard/scan.js
           node tests/test_match.cjs
       - name: Build full dashboard data from historical and current records
         run: python3 scripts/build_dashboard_data.py
       - name: Prepare saved galleries, source links and distances
         run: python3 scripts/prepare_portal.py
+      - name: Publish actual scan outcome and coverage
+        run: python3 scripts/publish_scan.py
       - name: Verify published payload
         run: |
           python3 - <<'PY'
@@ -57,6 +60,8 @@ jobs:
                       assert (Path('dashboard') / photo['url'].removeprefix('./')).is_file()
           print('Publishing', len(p['listings']), 'vehicles and', len(p['events']), 'events')
           print('Features:', p['meta']['portal_features'])
+          scan = json.loads(Path('dashboard/scan.json').read_text())
+          print('Scan:', scan['run_id'], scan['status'], scan['coverage'])
           PY
       - name: Configure Pages
         uses: actions/configure-pages@v5
