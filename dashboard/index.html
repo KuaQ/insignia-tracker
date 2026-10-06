@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Insignia Tracker</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">INSIGNIA B SPORTS TOURER</div>
+      <h1>Rynek i historia ofert</h1>
+      <p id="subtitle">Ładowanie danych…</p>
+    </div>
+    <div class="status-pill" id="dataStatus">Dane</div>
+  </header>
+
+  <main>
+    <section class="kpis" id="kpis"></section>
+
+    <section class="panel filters">
+      <div class="filter">
+        <label>Szukaj</label>
+        <input id="search" placeholder="VIN, ID, wyposażenie, portal…">
+      </div>
+      <div class="filter">
+        <label>Status</label>
+        <select id="statusFilter">
+          <option value="">Wszystkie</option>
+          <option value="active">Aktywne</option>
+          <option value="gone">Zniknięte</option>
+          <option value="sold">Sprzedane</option>
+          <option value="problematic">Problematyczne</option>
+        </select>
+      </div>
+      <div class="filter">
+        <label>Skrzynia</label>
+        <select id="gearboxFilter">
+          <option value="">Wszystkie</option>
+          <option value="automatic">Automat</option>
+          <option value="manual">Manual</option>
+        </select>
+      </div>
+      <div class="filter">
+        <label>Max cena</label>
+        <input id="priceMax" type="number" min="0" step="1000" placeholder="65000">
+      </div>
+      <div class="filter">
+        <label>Sortuj</label>
+        <select id="sort">
+          <option value="priceAsc">Cena rosnąco</option>
+          <option value="priceDesc">Cena malejąco</option>
+          <option value="mileageAsc">Przebieg rosnąco</option>
+          <option value="yearDesc">Rok malejąco</option>
+          <option value="lastSeenDesc">Ostatnio widziane</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="charts">
+      <article class="panel">
+        <div class="panel-head"><h2>Cena vs przebieg</h2><span>kliknij punkt, aby przejść do auta</span></div>
+        <svg id="scatter" viewBox="0 0 760 330" role="img" aria-label="Cena względem przebiegu"></svg>
+      </article>
+      <article class="panel">
+        <div class="panel-head"><h2>Struktura rynku</h2><span>aktywny zbiór</span></div>
+        <div id="bars" class="bars"></div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Oferty</h2>
+        <span id="resultCount"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Auto</th><th>Cena</th><th>Przebieg</th><th>Rok</th><th>Skrzynia</th>
+              <th>Portal</th><th>Status</th><th>Wyposażenie</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="offerRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="split">
+      <article class="panel">
+        <div class="panel-head"><h2>Ostatnie zmiany</h2><span>historia trackera</span></div>
+        <div id="events" class="timeline"></div>
+      </article>
+      <article class="panel">
+        <div class="panel-head"><h2>Zniknięte / sprzedane</h2><span>weryfikacja statusu</span></div>
+        <div id="goneList" class="compact-list"></div>
+      </article>
+    </section>
+  </main>
+
+  <dialog id="detailDialog">
+    <button class="close" id="closeDialog">×</button>
+    <div id="detail"></div>
+  </dialog>
+
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
