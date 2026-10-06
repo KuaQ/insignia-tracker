@@ -1,0 +1,11 @@
+{
+  "max_price_pln": 65000,
+  "fuel": "benzyna",
+  "body": "kombi",
+  "model": "Opel Insignia B Sports Tourer",
+  "gearboxes": ["manual", "automatic"],
+  "archive_images": true,
+  "max_images_per_listing": 12,
+  "request_timeout_seconds": 20,
+  "user_agent": "Mozilla/5.0 (compatible; InsigniaTracker/1.0; +private-research)"
+}
